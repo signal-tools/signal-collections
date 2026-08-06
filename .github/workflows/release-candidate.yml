@@ -16,10 +16,10 @@ jobs:
   candidate:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           path: signal-collections
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           repository: signal-tools/signal
           ref: ${{ inputs.signal_ref }}

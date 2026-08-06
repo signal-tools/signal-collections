@@ -1,0 +1,83 @@
+name: Release candidate
+
+on:
+  workflow_dispatch:
+    inputs:
+      signal_ref:
+        description: Exact signal-tools/signal branch, tag, or SHA to test and pack
+        required: true
+        default: main
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  candidate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          path: signal-collections
+      - uses: actions/checkout@v7
+        with:
+          repository: signal-tools/signal
+          ref: ${{ inputs.signal_ref }}
+          path: signal
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 26
+          cache: npm
+          cache-dependency-path: |
+            signal/package-lock.json
+            signal-collections/package-lock.json
+      - name: Use the pinned npm CLI
+        run: npm install --global npm@12.0.2
+      - name: Install and build Signal
+        run: npm ci && npm run build
+        working-directory: signal
+      - name: Install collection dependencies and local peer
+        run: npm ci --legacy-peer-deps && npm install --no-save --package-lock=false ../signal/workspaces/signal
+        working-directory: signal-collections
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium firefox webkit
+        working-directory: signal-collections
+      - name: Validate collections
+        run: npm run build && npm run lint && npm run format:check && npm test && npm run test:polyfill && npm run package:check
+        working-directory: signal-collections
+      - name: Pack Signal dependency
+        id: signal
+        working-directory: signal
+        run: |
+          mkdir -p ../signal-collections/dependency
+          tarball="$(npm pack --workspace @signal-tools/signal --pack-destination ../signal-collections/dependency | tail -n 1)"
+          echo "tarball=$tarball" >> "$GITHUB_OUTPUT"
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Pack collections candidate
+        id: collections
+        working-directory: signal-collections
+        run: |
+          mkdir -p release
+          tarball="$(npm pack --workspace @signal-tools/collections --pack-destination release | tail -n 1)"
+          echo "tarball=$tarball" >> "$GITHUB_OUTPUT"
+      - name: Test both tarballs in a clean consumer
+        working-directory: signal-collections
+        env:
+          COLLECTIONS_TARBALL: ${{ steps.collections.outputs.tarball }}
+          SIGNAL_TARBALL: ${{ steps.signal.outputs.tarball }}
+        run: node scripts/test-consumer.mjs "dependency/$SIGNAL_TARBALL" "release/$COLLECTIONS_TARBALL"
+      - name: Write candidate manifest and checksum
+        working-directory: signal-collections
+        env:
+          COLLECTIONS_TARBALL: ${{ steps.collections.outputs.tarball }}
+          SIGNAL_REF: ${{ inputs.signal_ref }}
+          SIGNAL_SHA: ${{ steps.signal.outputs.sha }}
+        run: |
+          node scripts/write-candidate-manifest.mjs "release/$COLLECTIONS_TARBALL" "$SIGNAL_REF" "$SIGNAL_SHA"
+          shasum -a 256 "release/$COLLECTIONS_TARBALL" > release/SHA256SUMS
+      - uses: actions/upload-artifact@v7
+        with:
+          name: npm-release-candidate
+          path: signal-collections/release/
+          if-no-files-found: error
+          retention-days: 14

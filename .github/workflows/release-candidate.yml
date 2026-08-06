@@ -75,7 +75,7 @@ jobs:
         run: |
           node scripts/write-candidate-manifest.mjs "release/$COLLECTIONS_TARBALL" "$SIGNAL_REF" "$SIGNAL_SHA"
           shasum -a 256 "release/$COLLECTIONS_TARBALL" > release/SHA256SUMS
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: npm-release-candidate
           path: signal-collections/release/

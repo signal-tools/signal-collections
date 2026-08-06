@@ -1,7 +1,7 @@
 import { Signal } from "@signal-tools/signal";
 import { describe, expect, it } from "vitest";
 
-import { SignalArray } from "../src/SignalArray.js";
+import { SignalArray } from "../workspaces/collections/src/SignalArray.js";
 import { watch } from "./watch.js";
 
 describe("SignalArray", () => {

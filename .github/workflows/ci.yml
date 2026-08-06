@@ -35,7 +35,7 @@ jobs:
         run: npm ci && npm run build
         working-directory: signal
       - name: Install collection dependencies and local peer
-        run: npm ci --legacy-peer-deps && npm install --no-save --package-lock=false ../signal
+        run: npm ci --legacy-peer-deps && npm install --no-save --package-lock=false ../signal/workspaces/signal
         working-directory: signal-collections
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium firefox webkit

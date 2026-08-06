@@ -8,7 +8,7 @@ export default defineConfig({
 			enabled: true,
 			provider: "istanbul",
 			reporter: ["text", "lcov", "html"],
-			include: ["src/**/*.ts"],
+			include: ["workspaces/collections/src/**/*.ts"],
 			exclude: ["**/*.test.ts", "**/*.spec.ts"],
 		},
 	},

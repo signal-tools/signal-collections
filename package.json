@@ -1,59 +1,23 @@
 {
-	"name": "@signal-tools/collections",
-	"version": "0.0.0",
-	"description": "Signal-aware Array, Map, Set, and Object collections",
-	"author": "Jonathan Neal <jonathantneal@hotmail.com> (https://jonneal.dev)",
-	"homepage": "https://github.com/signal-tools/signal-collections#readme",
-	"license": "MIT-0",
+	"name": "@signal-tools/collections-workspace",
+	"private": true,
 	"type": "module",
-	"exports": {
-		".": {
-			"types": "./dist/index.d.ts",
-			"default": "./dist/index.js"
-		}
-	},
-	"main": "./dist/index.js",
-	"types": "./dist/index.d.ts",
-	"files": [
-		"dist",
-		"README.md",
-		"LICENSE.md"
-	],
-	"repository": "https://github.com/signal-tools/signal-collections",
-	"bugs": "https://github.com/signal-tools/signal-collections/issues",
-	"sideEffects": false,
-	"keywords": [
-		"array",
-		"collection",
-		"map",
-		"object",
-		"reactive",
-		"reactivity",
-		"set",
-		"signal",
-		"tc39"
+	"workspaces": [
+		"workspaces/*"
 	],
 	"scripts": {
-		"build": "tsc",
+		"build": "npm run build --workspace @signal-tools/collections",
 		"format": "dprint fmt",
 		"format:check": "dprint check",
 		"lint": "biome check",
 		"lint:fix": "biome check --write",
-		"package:check": "npm pack --dry-run",
+		"package:check": "npm pack --dry-run --workspace @signal-tools/collections",
 		"test": "npm run test:node && npm run test:chromium && npm run test:firefox && npm run test:webkit",
 		"test:chromium": "vitest run --browser.name=chromium",
 		"test:firefox": "vitest run --browser.name=firefox",
 		"test:node": "vitest run --config vitest.node.config.ts",
 		"test:webkit": "vitest run --browser.name=webkit",
 		"vitest": "vitest"
-	},
-	"publishConfig": {
-		"access": "public",
-		"provenance": true,
-		"registry": "https://registry.npmjs.org/"
-	},
-	"peerDependencies": {
-		"@signal-tools/signal": "0.0.0"
 	},
 	"packageManager": "npm@11.13.0",
 	"allowScripts": {

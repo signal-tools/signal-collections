@@ -37,7 +37,7 @@ jobs:
         run: npm ci && npm run build
         working-directory: signal
       - name: Install collection dependencies and local peer
-        run: npm ci --legacy-peer-deps && npm install --no-save --package-lock=false ../signal
+        run: npm ci --legacy-peer-deps && npm install --no-save --package-lock=false ../signal/workspaces/signal
         working-directory: signal-collections
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium firefox webkit
@@ -50,7 +50,7 @@ jobs:
         working-directory: signal
         run: |
           mkdir -p ../signal-collections/dependency
-          tarball="$(npm pack --pack-destination ../signal-collections/dependency | tail -n 1)"
+          tarball="$(npm pack --workspace @signal-tools/signal --pack-destination ../signal-collections/dependency | tail -n 1)"
           echo "tarball=$tarball" >> "$GITHUB_OUTPUT"
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
       - name: Pack collections candidate
@@ -58,7 +58,7 @@ jobs:
         working-directory: signal-collections
         run: |
           mkdir -p release
-          tarball="$(npm pack --pack-destination release | tail -n 1)"
+          tarball="$(npm pack --workspace @signal-tools/collections --pack-destination release | tail -n 1)"
           echo "tarball=$tarball" >> "$GITHUB_OUTPUT"
       - name: Test both tarballs in a clean consumer
         working-directory: signal-collections

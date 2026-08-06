@@ -80,7 +80,7 @@ jobs:
         run: node scripts/verify-candidate.mjs release "$VERSION"
       - name: Verify the Signal peer is published
         run: |
-          peer="$(node -p 'require("./package.json").peerDependencies["@signal-tools/signal"]')"
+          peer="$(node -p 'require("./workspaces/collections/package.json").peerDependencies["@signal-tools/signal"]')"
           npm view "@signal-tools/signal@$peer" version >/dev/null
       - name: Publish verified candidate
         env:

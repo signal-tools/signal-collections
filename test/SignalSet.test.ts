@@ -1,7 +1,7 @@
 import { Signal } from "@signal-tools/signal";
 import { describe, expect, it } from "vitest";
 
-import { SignalSet } from "../src/SignalSet.js";
+import { SignalSet } from "../workspaces/collections/src/SignalSet.js";
 import { watch } from "./watch.js";
 
 describe("SignalSet", () => {
